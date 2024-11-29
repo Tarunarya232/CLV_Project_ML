@@ -1,162 +1,76 @@
-# Customer Segmentation Analysis using RFM Approach
+# Customer Segmentation Using K-Means Clustering
 
 ## Overview
-This project focuses on analyzing customer behavior and segmenting customers using the RFM (Recency, Frequency, Monetary) approach. By analyzing various customer attributes and transaction data, we aim to help businesses optimize their marketing strategies, improve customer service, and reduce customer churn.
-
-## Problem Statement
-Businesses need to understand their customers better to:
-- Optimize marketing campaigns
-- Improve customer retention
-- Increase profitability
-- Enhance customer service
-- Prevent customer churn
-
-## Dataset
-
-The dataset contains more than 300k+ comprehensive customer information including:
-- Customer demographics (ID, name, email, phone, address, age, gender, income)
-- Transaction details (purchase dates, amounts, products)
-- Product information (category, brand, type)
-- Order information (shipping method, payment method, status)
-- Customer feedback
+This project focuses on performing customer segmentation using K-Means clustering, with the aim to identify distinct customer groups based on recency, frequency, and monetary (RFM) metrics. The customer data is analyzed and clustered into three segments to help businesses personalize marketing strategies, improve customer service, and optimize resources.
 
 ## Project Structure
-```
-├── data/
-│   └── customer_data.csv
-├── notebooks/
-│   └── customer_segmentation_analysis.ipynb
-├── src/
-│   ├── data_preprocessing.py
-│   └── rfm_analysis.py
-├── README.md
-└── requirements.txt
-```
+- **Data**: The project utilizes a customer dataset (`df2`), containing various attributes such as Customer ID, Transaction details, Age, Gender, Income, Customer Segment, and purchase behavior.
+- **RFM Metrics**: The segmentation is based on three core metrics — Recency (time since last purchase), Frequency (number of transactions), and Monetary (total spent).
+- **Clustering**: We use the K-Means clustering algorithm to segment the customers into three distinct groups.
+- **Evaluation**: The clustering performance is evaluated using Davies-Bouldin and Calinski-Harabasz scores.
+- **Visualization**: Various visualizations such as scatter plots, box plots, and PCA projections are used to understand the distribution of customers within the segments and compare the clusters with existing customer segments.
 
-## Methodology
+## Steps in the Project
 
-### 1. Data Exploration and Analysis
-- Demographic analysis
-- Transaction patterns
-- Product preferences
-- Payment and shipping analysis
-- Temporal analysis
-- Customer feedback analysis
+### 1. **Data Preprocessing**
+- **Loading Data**: The dataset is loaded and relevant columns are selected for analysis.
+- **Feature Engineering**: 
+  - Calculating RFM metrics from the dataset: `Recency`, `Frequency`, and `Monetary`.
+  - Handling any outliers in the RFM metrics using the Interquartile Range (IQR) method.
+  - Standardizing the RFM features using `StandardScaler` to ensure equal importance in the clustering model.
 
-### 2. Data Preprocessing
-1. **Handling Missing Values**
-   - Check for null values in each column
-   - Apply appropriate imputation methods
-   - Remove or fill missing values based on business context
+### 2. **K-Means Clustering**
+- **Clustering Setup**: We performed K-Means clustering with 3 clusters using the `KMeans` algorithm from scikit-learn.
+- **Fitting the Model**: The K-Means model was fitted on the scaled RFM features, and cluster labels were assigned to each customer.
+- **Visualizing Clusters**: We visualized the clusters using a scatter plot (`Monetary` vs. `Frequency`) and PCA (Principal Component Analysis) to reduce dimensionality and create a 2D visualization of the clusters.
 
-2. **Feature Engineering**
-   - Calculate RFM metrics
-     - Recency: Days since last purchase
-     - Frequency: Total number of purchases
-     - Monetary: Total amount spent
+### 3. **Evaluation of Clustering**
+- **Davies-Bouldin Score**: Measures the average similarity ratio of clusters. A lower value indicates better clustering.
+- **Calinski-Harabasz Score**: Measures the ratio of the sum of between-cluster dispersion to within-cluster dispersion. A higher value indicates better-defined clusters.
+- **Results**: These metrics were calculated to assess the quality of the clustering.
 
-3. **Data Transformation**
-   - Label encoding for categorical variables
-   - One-hot encoding for nominal variables
-   - Feature scaling using StandardScaler
-   - Normalization of RFM values to 0-1 range
+### 4. **Comparison with Existing Customer Segments**
+- **Merging Clusters with Customer Segments**: The clustering results were compared with the predefined `Customer_Segment` to evaluate how well the K-Means clustering corresponds to existing segments.
+- **Box Plots**: Box plots were used to compare `Monetary`, `Recency`, and `Frequency` distributions across clusters and original customer segments.
 
-4. **Feature Selection**
-   - Remove redundant features
-   - Select relevant features for clustering
-   - Focus on RFM metrics for final segmentation
+### 5. **Results & Visualizations**
+- **Scatter Plot**: A scatter plot was created to visualize the clusters in the original feature space (`Monetary` vs. `Frequency`).
+- **PCA Plot**: PCA was applied to reduce the data dimensions to two, allowing for a clear 2D visualization of the customer segments.
+- **Box Plots**: Box plots were created for both the K-Means clusters and the original customer segments to visually compare the differences in the key metrics (Monetary, Recency, Frequency).
 
-### 3. K-means Implementation
+## Code Structure
+1. **Data Preprocessing**: 
+   - Loading and cleaning data.
+   - Calculating the RFM metrics and handling outliers.
+   - Standardizing features for clustering.
 
-1. **Algorithm Setup**
-   ```python
-   from sklearn.cluster import KMeans
-   from sklearn.preprocessing import StandardScaler
-   ```
+2. **Clustering & Visualization**:
+   - Applying the K-Means clustering algorithm to the RFM data.
+   - Visualizing the clusters using scatter plots and PCA.
+   - Calculating clustering evaluation scores (Davies-Bouldin and Calinski-Harabasz).
 
-2. **Data Preparation**
-   ```python
-   # Scale the RFM features
-   scaler = StandardScaler()
-   rfm_scaled = scaler.fit_transform(rfm_df[['Recency', 'Frequency', 'Monetary']])
-   ```
+3. **Evaluation & Comparison**:
+   - Comparing the clusters with the predefined customer segments.
+   - Visualizing the comparison using box plots.
 
-3. **Optimal Cluster Selection**
-   - Elbow Method Implementation
-   ```python
-   inertias = []
-   for k in range(1, 11):
-       kmeans = KMeans(n_clusters=k, random_state=42)
-       kmeans.fit(rfm_scaled)
-       inertias.append(kmeans.inertia_)
-   ```
-   - Silhouette Score Analysis
-   ```python
-   from sklearn.metrics import silhouette_score
-   silhouette_scores = []
-   for k in range(2, 11):
-       kmeans = KMeans(n_clusters=k, random_state=42)
-       cluster_labels = kmeans.fit_predict(rfm_scaled)
-       silhouette_avg = silhouette_score(rfm_scaled, cluster_labels)
-       silhouette_scores.append(silhouette_avg)
-   ```
+## Future Improvements
+1. **Cluster Tuning**: Experiment with different values for the number of clusters (`n_clusters`) and evaluate their impact on the clustering performance.
+2. **Advanced Feature Engineering**: Explore additional features such as customer lifetime value, churn prediction, and other relevant metrics for better segmentation.
+3. **Clustering Algorithms**: Test other clustering algorithms like DBSCAN or Agglomerative Clustering to compare performance.
+4. **Deep Learning**: Use autoencoders or other deep learning techniques for clustering in case of more complex data.
 
-4. **Final Model Training**
-   ```python
-   # Train K-means with optimal clusters
-   final_kmeans = KMeans(n_clusters=3, random_state=42)
-   clusters = final_kmeans.fit_predict(rfm_scaled)
-   ```
+## Dependencies
+To run this project, you will need the following Python libraries:
+- pandas
+- numpy
+- matplotlib
+- seaborn
+- scikit-learn
 
-5. **Customer Segmentation Results**
-   - Cluster 1 (Gold): High frequency, high monetary value, low recency
-   - Cluster 2 (Silver): Moderate values across all metrics
-   - Cluster 0 (Bronze): Low frequency, low monetary value, high recency
-
-## Key Findings
-
-### Demographic Insights
-- Majority of transactions from US
-- Higher male customer representation
-- Medium income customers form the largest segment
-- Younger customer base (majority below 30)
-
-### Transaction Patterns
-- Electronics is the most popular category
-- 14% negative feedback rate
-- Credit/debit cards are preferred payment methods
-- Equal distribution across shipping methods
-- 16% orders in pending status
-
-### Seasonal Trends
-- Peak transactions in April and August
-- Consistent weekly distribution with slight Thursday preference
-
-### RFM Segmentation Results
-- Clear distinction between customer segments based on purchasing behavior
-- Identified high-value customers for targeted marketing
-- Discovered potential growth segments
-
-## Technical Implementation
-
-### Requirements
-```
-pandas==1.5.3
-numpy==1.24.3
-scikit-learn==1.2.2
-matplotlib==3.7.1
-seaborn==0.12.2
+You can install these dependencies using the following command:
+```bash
+pip install pandas numpy matplotlib seaborn scikit-learn
 ```
 
-### Setup
-1. Clone the repository
-2. Install dependencies: `pip install -r requirements.txt`
-3. Run Jupyter notebook: `jupyter notebook`
-
-## Future Work
-- Implement predictive modeling for customer churn
-- Develop real-time customer scoring system
-- Integration with CRM systems
-- Enhanced visualization dashboard
-- Customer lifetime value prediction
-
+## Conclusion
+This project demonstrates the application of K-Means clustering on customer data to identify meaningful customer segments. The segments can provide valuable insights for marketing, customer retention, and personalized experiences.
